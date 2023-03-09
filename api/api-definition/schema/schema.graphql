@@ -1,0 +1,61 @@
+input File {
+  # name and extension of the file
+  name: String!
+  data: String!
+}
+
+input LibraryDescription {
+  name: String!
+  version: String!
+}
+
+input SketchMetadata {
+  includedLibs: [LibraryDescription!]
+}
+
+input Sketch {
+  name: String!
+  files: [File!]
+  ino: File!
+  metadata: SketchMetadata
+}
+
+type CompilationStatus {
+  id: String!
+}
+
+type Query {
+  compilation(compilationId: String!): CompilationStatus
+}
+
+type Mutation {
+  startCompilation(
+    fqbn: String!
+    sketch: Sketch!
+    ota: Boolean = false
+    verbose: Boolean = false
+  ): CompilationStatus
+}
+
+type CompilationLog {
+  type: String!
+  compilationId: String!
+  text: String!
+}
+
+type CompilationUpdate {
+  type: String!
+  compilationId: String!
+  state: String!
+}
+
+type Subscription {
+  compilationUpdate(compilationId: String!): CompilationUpdate
+  compilationLog(compilationId: String!): CompilationLog
+}
+
+schema {
+  query: Query
+  mutation: Mutation
+  subscription: Subscription
+}

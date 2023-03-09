@@ -1,0 +1,15 @@
+client:
+  package: client
+  filename: ./client.go
+models:
+  Int:
+    model: github.com/beyondan/gqlgen/graphql.Int64
+  DateTime:
+    model: github.com/beyondan/gqlgen/graphql.Time
+# The schema can be fetched from files or through introspection
+schema:
+  - ../../api/api-definition/schema/schema.graphql
+# endpoint:
+#   url: https://api.annict.com/graphql # Where do you want to send your request?
+query:
+  - ../../api/api-definition/query.graphql

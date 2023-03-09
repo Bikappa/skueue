@@ -1,0 +1,32 @@
+mutation startCompilation(
+  $fqbn: String!
+  $sketch: Sketch!
+  $ota: Boolean = false
+  $verbose: Boolean = false
+) {
+  startCompilation(fqbn: $fqbn, sketch: $sketch, ota: $ota, verbose: $verbose) {
+    id
+  }
+}
+
+query getCompilation($compilationId: String!) {
+  compilation(compilationId: $compilationId) {
+    id
+  }
+}
+
+subscription compilationUpdateSubscription($compilationId: String!) {
+  compilationUpdate(compilationId: $compilationId) {
+    __typename
+    compilationId
+    state
+  }
+}
+
+subscription compilationLogSubscription($compilationId: String!) {
+  compilationLog(compilationId: $compilationId) {
+    __typename
+    compilationId
+    text
+  }
+}

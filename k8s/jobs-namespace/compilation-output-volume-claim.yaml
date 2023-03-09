@@ -1,0 +1,13 @@
+# This volume claim is used to write compilation output files
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: arduino-builder-api-jobs 
+  name: compilation-output-volume-claim
+spec:
+  resources:
+    requests:
+      storage: 500Mi
+  storageClassName: hostpath
+  accessModes:
+    - ReadWriteMany
