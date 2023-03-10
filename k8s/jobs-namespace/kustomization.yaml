@@ -4,4 +4,5 @@ resources:
   - "./jobs-namespace.yaml"
   - "./compilation-output-volume-claim.yaml"
   - "./library-volume-claim.yaml"
-  - "./installer-job.yaml"
+  - "./installer.yaml"
+  - "./job-service.yaml"
