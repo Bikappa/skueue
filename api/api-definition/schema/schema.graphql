@@ -20,38 +20,48 @@ input Sketch {
   metadata: SketchMetadata
 }
 
-type CompilationStatus {
+input CompilationParameters {
+  fqbn: String!
+  sketch: Sketch!
+  # ota is not implemented, has no effect
+  ota: Boolean = false
+  verbose: Boolean = false
+}
+
+type EnqueuedCompilationJob {
   id: String!
+  resourceType: String!
+  queuedAt: String!
+  status: String!
+  completedAt: String
+  expiresAt: String
 }
 
 type Query {
-  compilation(compilationId: String!): CompilationStatus
+  compilation(compilationId: String!): EnqueuedCompilationJob
 }
 
 type Mutation {
   startCompilation(
-    fqbn: String!
-    sketch: Sketch!
-    ota: Boolean = false
-    verbose: Boolean = false
-  ): CompilationStatus
+    compilationParameters: CompilationParameters!
+  ): EnqueuedCompilationJob
 }
 
-type CompilationLog {
-  type: String!
-  compilationId: String!
+type LogLineMessage {
+  resourceType: String!
+  messageType: String!
   text: String!
 }
 
-type CompilationUpdate {
-  type: String!
-  compilationId: String!
-  state: String!
+type JobUpdateMessage {
+  resourceType: String!
+  messageType: String!
+  compilationJob: EnqueuedCompilationJob!
 }
 
 type Subscription {
-  compilationUpdate(compilationId: String!): CompilationUpdate
-  compilationLog(compilationId: String!): CompilationLog
+  compilationUpdate(compilationId: String!): JobUpdateMessage
+  compilationLog(compilationId: String!): LogLineMessage
 }
 
 schema {

@@ -1,0 +1,99 @@
+# manager of jobs, exposes api
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: job-service
+  namespace: arduino-builder-api-jobs
+  labels:
+    app: job-service
+spec:
+  selector:
+    matchLabels:
+      app: job-service
+  template:
+    metadata:
+      labels:
+        app: job-service
+    spec:
+      serviceAccountName: job-service
+      containers:
+      - name: job-service
+        image: arduino/job-service
+        env:
+        - name: IN_K8S_CLUSTER
+          value: "true"
+        ports:
+        - containerPort: 8080
+        volumeMounts:
+        - name: compilation-output
+          mountPath: /var/run/compilations-output
+          readOnly: false
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "100m"
+        imagePullPolicy: IfNotPresent
+      volumes:
+      - name: compilation-output
+        persistentVolumeClaim:
+          claimName: compilation-output-volume-claim
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: job-service
+  namespace: arduino-builder-api-jobs
+spec:
+  type: LoadBalancer
+  selector:
+    app: job-service
+  ports:
+  - port: 3001
+    targetPort: 8080
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: job-service
+  namespace: arduino-builder-api-jobs
+# ---
+# apiVersion: v1
+# kind: Secret
+# metadata:
+#   name: job-service-secret
+#   annotations:
+#     kubernetes.io/service-account.name: job-service
+# type: kubernetes.io/service-account-token
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: arduino-builder-api-jobs
+  name: compilation-job-admin
+rules:
+- apiGroups: [""]
+  resources: ["pods", "configmaps"]
+  verbs: ["get", "watch", "list", "create"]
+- apiGroups: ["batch"]
+  resources: [ "jobs"]
+  verbs: ["get",  "watch", "list", "create"]
+- apiGroups: [""]
+  resources: [ "logs", "pods/log"]
+  verbs: ["watch", "get"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  namespace: arduino-builder-api-jobs
+  name: admin-pods
+subjects:
+- kind: ServiceAccount
+  name: job-service
+  namespace: arduino-builder-api-jobs
+roleRef:
+  # "roleRef" specifies the binding to a Role / ClusterRole
+  kind: Role #this must be Role or ClusterRole
+  name: compilation-job-admin # this must match the name of the Role or ClusterRole you wish to bind to
+  apiGroup: rbac.authorization.k8s.io
+
+
