@@ -55,3 +55,6 @@ For development purposes the service can be run outside of Kubernetes with
 ```
 make run-service-dev
 ```
+
+In this scenario it uses the local `kubectl` configuration in order to connect to a cluster, normally located at `~/.kube/config`, 
+instead of a service account.
