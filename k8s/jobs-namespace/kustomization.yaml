@@ -3,6 +3,7 @@ kind: Kustomization
 resources:
   - "./jobs-namespace.yaml"
   - "./compilation-output-volume-claim.yaml"
-  - "./library-volume-claim.yaml"
+  - "./data-directory-volume-claim.yaml"
+  - "./user-directory-volume-claim.yaml"
   - "./installer.yaml"
   - "./job-service.yaml"

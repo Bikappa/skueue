@@ -21,14 +21,19 @@ spec:
         args: [ "while true; do sleep 30; done;" ]
         env:
           - name: ARDUINO_DIRECTORIES_DATA
-            value: /opt/arduino15
+            value: /var/run/arduino/directories-data
+          - name: ARDUINO_DIRECTORIES_USER
+            value: /var/run/arduino/directories-user
         volumeMounts:
         # Where to install packages and libraries
         - name: directories-data
-          mountPath: /opt/arduino15
+          mountPath: /var/run/arduino/directories-data
+          readOnly: false
+        - name: directories-user
+          mountPath: /var/run/arduino/directories-user
           readOnly: false
         - name: compilation-output
-          mountPath: /var/run/compilations-output
+          mountPath: /var/run/arduino/compilations-output
           readOnly: false
         resources:
           limits:
@@ -38,7 +43,10 @@ spec:
       volumes:
         - name: directories-data
           persistentVolumeClaim:
-              claimName: library-volume-claim
+              claimName: data-directory-volume-claim
+        - name: directories-user
+          persistentVolumeClaim:
+              claimName: user-directory-volume-claim
         - name: compilation-output
           persistentVolumeClaim:
               claimName: compilation-output-volume-claim

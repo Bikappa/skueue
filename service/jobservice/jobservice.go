@@ -47,7 +47,6 @@ type CompilationService interface {
 type K8SJobServiceJobConfiguration struct {
 	ImageTag                string
 	TTLSecondsAfterFinished int32
-	LibraryVolume           JobVolume
 	BuildVolume             JobVolume
 }
 
@@ -109,19 +108,27 @@ func (s *K8SCompilationService) EnqueueJob(ctx context.Context, params types.Com
 	jobId := uuid.New().String()
 	files := params.Sketch.Files
 	files = append(files, params.Sketch.Ino)
+
+	libFullPaths := []string{}
+	if params.Sketch.Metadata != nil {
+		for _, il := range params.Sketch.Metadata.IncludedLibs {
+			libFullPaths = append(libFullPaths, path.Join("/opt/arduino/directories-user/libraries", il.Name))
+		}
+	}
+	
 	compilationJob := CompilationOptions{
-		ID:            jobId,
-		SketchName:    params.Sketch.Name,
-		Namespace:     s.config.K8SNamespace,
-		Image:         s.config.Jobs.ImageTag,
-		TTLSeconds:    s.config.Jobs.TTLSecondsAfterFinished,
-		Service:       &s.config.ServiceMetadata,
-		LibraryVolume: &s.config.Jobs.LibraryVolume,
-		OutputVolume:  &buildVolume,
-		FQBN:          params.FQBN,
-		UserID:        params.UserID,
-		Files:         files,
-		Environment:   &s.config.Environment,
+		ID:           jobId,
+		SketchName:   params.Sketch.Name,
+		Namespace:    s.config.K8SNamespace,
+		Image:        s.config.Jobs.ImageTag,
+		TTLSeconds:   s.config.Jobs.TTLSecondsAfterFinished,
+		Service:      &s.config.ServiceMetadata,
+		OutputVolume: &buildVolume,
+		FQBN:         params.FQBN,
+		UserID:       params.UserID,
+		Files:        files,
+		Libs:         libFullPaths,
+		Environment:  &s.config.Environment,
 	}
 	if params.Verbose != nil {
 		compilationJob.Verbose = *params.Verbose

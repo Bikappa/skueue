@@ -26,7 +26,10 @@ spec:
       # Available packages and libraries
       - name: data-directory-volume
         persistentVolumeClaim:
-            claimName: {{ .LibraryVolume.ClaimName }}
+            claimName: data-directory-volume-claim
+      - name: user-directory-volume
+        persistentVolumeClaim:
+            claimName: user-directory-volume-claim
       # Build files volume
       - name: build-volume
         persistentVolumeClaim:
@@ -44,18 +47,29 @@ spec:
         - "--no-color"
         - "--fqbn"
         - {{ .FQBN }}
+        {{range .Libs}}   
+        - "--library"
+        - "{{.}}"
+        {{end}}
         - "--build-path"
         - "/var/build"
         - "/var/sketch/{{ .SketchName }}"
         env:
             - name: ARDUINO_DIRECTORIES_DATA
-              value: /opt/arduino15
+              value: /opt/arduino/directories-data
+            - name: ARDUINO_DIRECTORIES_USER
+              value: /opt/arduino/directories-user
         imagePullPolicy: IfNotPresent
         volumeMounts:
-        # Available packages and libraries
+        # Available cores 
         - name: data-directory-volume
-          mountPath: /opt/arduino15
-          subPath: {{ .LibraryVolume.SubPath }}
+          mountPath: /opt/arduino/directories-data
+          subPath: ""
+          readOnly: true
+         # Available libraries 
+        - name: user-directory-volume
+          mountPath: /opt/arduino/directories-user
+          subPath: ""
           readOnly: true
         - name: build-volume
           mountPath: /var/build

@@ -2,7 +2,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   namespace: arduino-builder-api-jobs
-  name: library-volume-claim
+  name: data-directory-volume-claim
 spec:
   resources:
     requests:

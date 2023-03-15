@@ -134,10 +134,7 @@ func createCompilationService() (*jobservice.K8SCompilationService, error) {
 				ClaimName: "compilation-output-volume-claim",
 				SubPath:   "",
 			},
-			LibraryVolume: jobservice.JobVolume{
-				ClaimName: "library-volume-claim",
-				SubPath:   "",
-			},
+	
 		},
 		CompilationsOutputBaseDir: "/var/run/compilations-output",
 	})

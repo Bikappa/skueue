@@ -1,0 +1,13 @@
+# where the cli expects to find `directories.user` content (installed libraries)
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  namespace: arduino-builder-api-jobs
+  name: user-directory-volume-claim
+spec:
+  resources:
+    requests:
+      storage: 3Gi
+  storageClassName: hostpath
+  accessModes:
+    - ReadWriteMany

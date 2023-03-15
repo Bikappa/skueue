@@ -32,19 +32,19 @@ type ServiceMetadata struct {
 }
 
 type CompilationOptions struct {
-	ID            string
-	SketchName    string
-	Namespace     string
-	Image         string
-	Environment   *Environment
-	OutputVolume  *JobVolume
-	LibraryVolume *JobVolume
-	FQBN          string
-	UserID        string
-	Service       *ServiceMetadata
-	TTLSeconds    int32
-	Files         []types.File
-	Verbose       bool
+	ID           string
+	SketchName   string
+	Namespace    string
+	Image        string
+	Environment  *Environment
+	OutputVolume *JobVolume
+	FQBN         string
+	UserID       string
+	Service      *ServiceMetadata
+	TTLSeconds   int32
+	Files        []types.File
+	Libs         []string
+	Verbose      bool
 }
 
 func (j *CompilationOptions) CreateK8SJob() (*batchv1.Job, error) {
